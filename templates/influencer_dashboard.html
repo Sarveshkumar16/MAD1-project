@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Influencer Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            margin-bottom: 30px;
+        }
+
+        .welcome-message {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #007bff;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .campaign-box,
+        .request-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: #f1f3f5;
+            margin-bottom: 10px;
+        }
+
+        .campaign-box span,
+        .request-box span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .btn {
+            margin-left: 5px;
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .modal-title {
+            font-weight: 500;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            border-top: none;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        textarea,
+        input[type="text"],
+        input[type="number"] {
+            resize: none;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('influencer', username=username) }}">Influencer Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('influencer', username=username) }}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('find_campaigns', username=username) }}">Find Campaigns</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('stats') }}">Stats</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    
+    <div class="container">
+        
+        <div class="main-content">
+            <div class="welcome-message">
+                <span>Welcome, {{ username }}</span>
+            </div>
+
+            
+            <div class="active-adrequests">
+                <h2 class="section-title">Active Ad Requests</h2>
+                {% for request in active_adrequests %}
+                    {% if request.progression_status != 'Completed' %}
+                        <div class="campaign-box">
+                            <span>{{ request.messages }}</span>
+                            <div>
+                                <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewModal{{ request.id }}">View</button>
+                                <form action="{{ url_for('complete_ad_request', username=username, id=request.id) }}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-warning btn-sm">Complete Ad Request</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            
+            <div class="new-requests">
+                <h2 class="section-title">New Requests</h2>
+                {% for request in new_requests %}
+                <div class="request-box">
+                    <span>{{ request.messages }}</span>
+                    <div>
+                        <form action="{{ url_for('accept_request', username=username, id=request.id) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                        </form>
+                        <form action="{{ url_for('reject_request', username=username, id=request.id) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                        </form>
+                        <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewModal{{ request.id }}">View</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        
+        {% for request in active_adrequests + new_requests %}
+        <div class="modal fade" id="viewModal{{ request.id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ request.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="viewModalLabel{{ request.id }}">Ad Request Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Messages:</strong> {{ request.messages }}</p>
+                        <p><strong>Requirements:</strong> {{ request.requirements }}</p>
+                        <p><strong>Payment Amount:</strong> {{ request.payment_amount }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
