@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin: 0;
+            color: #fff;
+        }
+        p {
+            margin: 20px 0;
+        }
+        a {
+            text-decoration: none;
+            color: #fff;
+            font-weight: 500;
+            font-size: 1.1em;
+            background-color: #333;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        a:hover {
+            background-color: #555;
+            color: #fff;
+        }
+        .link-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Welcome to the Home Page</h1>
+        <br>
+        <div class="link-container">
+            <a href="/login">Login</a>
+            <a href="/sponsor_signup">Signup as sponsor</a>
+            <a href="/influencer_signup">Signup as influencer</a>
+        </div>
+    </div>
+</body>
+</html>
